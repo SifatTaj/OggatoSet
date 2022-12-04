@@ -10,7 +10,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from utils.custom_conv import AnonConv2d
+from anon_utils.custom_conv import AnonConv2d
 
 
 class BasicBlock(nn.Module):
@@ -107,5 +107,5 @@ class AnonResNet(nn.Module):
         return out
 
 
-def AnonResNet18(num_classes, num_channel, aug_indices, deanon_dim, num_aug_param, aug_percent):
+def AnonResNet18(num_classes, num_channel, aug_indices, deanon_dim, aug_percent):
     return AnonResNet(BasicBlock, [2, 2, 2, 2], num_classes=num_classes, num_channel=num_channel, aug_indices=aug_indices, deanon_dim=deanon_dim, aug_percent=aug_percent)

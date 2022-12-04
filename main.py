@@ -9,21 +9,16 @@ import torch.backends.cudnn as cudnn
 import torchvision
 import torchvision.transforms as transforms
 import numpy as np
-import os
-import argparse
-
-from matplotlib import pyplot as plt
-from torchvision.io import read_image
 
 from models.anon_resnet import AnonResNet18
-from utils.param_count_table import count_total_params, show_parameters
+from anon_utils.param_count_table import count_total_params, show_parameters
 
 from models.original_resnet import ResNet18
 from utils import progress_bar
 
 from ptflops import get_model_complexity_info
 
-from utils.anon_dataset_loader import AugDataset2
+from anon_utils.anon_dataset_loader import AugDataset2
 
 
 def train(net, epoch, trainloader):
@@ -94,12 +89,12 @@ transform_test = transforms.Compose([
     transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
 ])
 
-original_trainset = torchvision.datasets.CIFAR100(root='data_torch',
+original_trainset = torchvision.datasets.CIFAR10(root='data_torch',
                                                   train=True,
                                                   transform=transform_train,
                                                   download=True)
 
-original_testset = torchvision.datasets.CIFAR100(root='data_torch',
+original_testset = torchvision.datasets.CIFAR10(root='data_torch',
                                                  train=False,
                                                  transform=transform_test,
                                                  download=True)
@@ -111,7 +106,7 @@ original_trainloader = torch.utils.data.DataLoader(
     original_trainset, batch_size=128, shuffle=True, num_workers=2)
 
 
-ds_name = 'CIFAR100'
+ds_name = 'CIFAR10'
 model_name = 'resnet'
 
 aug_percentages = [0.0, 0.25, 0.5, 0.75, 1.0]
@@ -135,11 +130,10 @@ for level_idx, aug_percent in enumerate(aug_percentages):
     deanon_dim = 28 if ds_name == 'MNIST' else 32
     num_channel = 1 if ds_name == 'MNIST' else 3
     num_classes = 100 if ds_name == 'CIFAR100' else 10
-    # resnet_params = 11173962
 
     # Hyper params
     learning_rate = 0.1
-    num_epochs = 100
+    num_epochs = 1
 
     # Aug index extraction
     if aug_percent != 0:
@@ -157,7 +151,7 @@ for level_idx, aug_percent in enumerate(aug_percentages):
     if model_name == 'resnet':
         net = ResNet18(num_classes, num_channel) \
             if level_idx == 0 \
-            else AnonResNet18(num_classes, num_channel, aug_indices, deanon_dim, aug_percent)
+            else AnonResNet18(num_classes=num_classes, num_channel=num_channel, aug_indices=aug_indices, deanon_dim=deanon_dim, aug_percent=aug_percent)
 
     net = net.to(device)
     if device == 'cuda':
