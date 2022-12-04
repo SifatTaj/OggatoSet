@@ -23,3 +23,24 @@ from utils import progress_bar
 
 from ptflops import get_model_complexity_info
 from datetime import datetime
+
+
+class AugDataset2(torch.utils.data.Dataset):
+    def __init__(self, aug_dataset, original_dataset):
+        # self.x = torch.from_numpy(np.array([data.numpy().astype(np.float16) for data in aug_dataset[:, 0]]))
+        self.x = aug_dataset
+        self.x = self.x.float()
+
+        print("set:", self.x.shape)
+
+        # self.y = torch.from_numpy(original_dataset[:, 1].astype('int'))
+        self.y = torch.IntTensor([data[1] for data in original_dataset])
+        self.y = self.y.long()
+
+        self.n_samples = aug_dataset.shape[0]
+
+    def __len__(self):
+        return self.n_samples
+
+    def __getitem__(self, index):
+        return self.x[index], self.y[index]
