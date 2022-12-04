@@ -109,7 +109,7 @@ original_trainloader = torch.utils.data.DataLoader(
 ds_name = 'CIFAR10'
 model_name = 'resnet'
 
-aug_percentages = [0.0, 0.25, 0.5, 0.75, 1.0]
+aug_percentages = [0.0, 0.25]
 aug_indices_all = torch.load(f'aug_datasets/{ds_name}_indices.pt')
 
 for level_idx, aug_percent in enumerate(aug_percentages):
@@ -133,7 +133,7 @@ for level_idx, aug_percent in enumerate(aug_percentages):
 
     # Hyper params
     learning_rate = 0.1
-    num_epochs = 1
+    num_epochs = 100
 
     # Aug index extraction
     if aug_percent != 0:
